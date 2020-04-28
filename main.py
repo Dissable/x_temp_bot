@@ -1,11 +1,11 @@
 import telebot
-import config
+#import config
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from telebot import types
 import random
-
+import os
 
 def get_anek():
     page = random.randrange(1, 500, 1)
@@ -14,6 +14,7 @@ def get_anek():
     website.encoding = 'cp1251'
     website_url = website.text
     if str(website)=='<Response [200]>':
+#    if True:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(website_url, 'lxml')
         lst=[i.text for i in soup.find_all('table', {'class':'maintbl'})[0].find_all('form', {'method':'post'})[0].find_all('p') if (len(i.text) > 10 and 'Ч И Т А Т Ь' not in i.text)]
@@ -25,8 +26,8 @@ def get_anek():
     else:
         return('anekdotov.net спалил парсер')
 
-
-bot = telebot.TeleBot(config.token)
+TKNg=str(os.environ.get('TKN'))
+bot = telebot.TeleBot(TKNg)
 @bot.message_handler(commands=['start'])
 def hello(message):
     markup = types.ReplyKeyboardMarkup()
@@ -78,7 +79,5 @@ def stat(tag=0):
     df = pd.DataFrame(d)
     df = df.rename(columns={'Country,Other': 'Country', 'Serious,Critical': 'SeriousCritical'})
     return df
-
-
 
 print ('Done')
