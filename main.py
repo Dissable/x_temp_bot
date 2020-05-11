@@ -13,7 +13,7 @@ def get_anek():
     website = requests.get(url1)
     website.encoding = 'cp1251'
     website_url = website.text
-    if str(website)=='<Response [200]>':
+    if len(str(website.text))>100:
 #    if True:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(website_url, 'lxml')
