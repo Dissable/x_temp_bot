@@ -24,7 +24,7 @@ def get_anek():
         else:
             return('— Ты где был? — С собакой гулял. — У нас же нет собаки. — А мы с ней на улице познакомились.')
     else:
-        return('anekdotov.net спалил парсер')
+        return('anekdotov.net спалил парсер _')
 
 TKNg=str(os.environ.get('TKN'))
 bot = telebot.TeleBot(TKNg)
@@ -38,7 +38,7 @@ def hello(message):
 
 @bot.message_handler(func=lambda message: message.text=='Кто на свете всех милее, всех румяней и белее?')
 def Xen(message):
-    bot.send_message(message.chat.id, 'На свете всех милее и румяней и белее - Ксенюшка!!!')
+bot.send_message(message.chat.id, f'На свете всех милее и румяней и белее - {message.from.username}!!!')
 
 @bot.message_handler(func=lambda message: message.text=='Расскажи анекдот')
 def anek(message):
