@@ -9,6 +9,7 @@ import os
 
 
 TKNg=str(os.environ.get('TKN'))
+
 bot = telebot.TeleBot(TKNg)
 
 global catdict
@@ -21,7 +22,7 @@ def get_catdict():
     website_url = website.text
     if len(str(website.text))>100:
         soup = BeautifulSoup(website_url, 'lxml')
-        lst=[url1+i.get('href') for i in soup.find_all('table', {'class':'menuanekdot'})[0].find_all('a', {'class':'menuanekdot'})]
+        lst=[url1+i.attrs['href'] for i in soup.find_all('table', {'class':'menuanekdot'})[0].find_all('a', {'class':'menuanekdot'})]
         lstnames=[i.text for i in soup.find_all('table', {'class':'menuanekdot'})[0].find_all('a', {'class':'menuanekdot'})]
         catdict=dict(zip(lstnames, lst))
         return(catdict)
