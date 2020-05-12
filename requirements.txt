@@ -1,3 +1,4 @@
 pytelegrambotapi
 beautifulsoup4
 pandas
+lxml
