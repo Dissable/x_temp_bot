@@ -11,25 +11,13 @@ import psycopg2
 from contextlib import closing
 from telebot import apihelper
 
+
 try:
     with open('E:\\Agnbad\\Sunny\\Pyton\\HSE\\Homework\\x-temp-bot2\\token.txt') as f:
         TKNg=f.read()
 except:
     TKNg=str(os.environ.get('TKN'))
 bot = telebot.TeleBot(TKNg)
-
-try:
-    with open('E:\\Agnbad\\Sunny\\Pyton\\HSE\\Homework\\x-temp-bot2\\dbconn.txt') as f:
-        dbconn=f.read().split('\n')
-        connec=psycopg2.connect(dbname=dbconn[0], user=dbconn[1], password=dbconn[2], host=dbconn[3])
-    local_start=True
-    print('local_start='+str(local_start))
-except:
-    DATABASE_URL = os.environ['DATABASE_URL']
-    connec = psycopg2.connect(DATABASE_URL, sslmode='require')
-    local_start=False
-    print('local_start='+str(local_start))
-
 
 # if local_start:
 if False:
@@ -41,6 +29,7 @@ if False:
     port='4145'
     apihelper.proxy = {'https': 'socks5://{}:{}'.format(ip, port)}
     # apihelper.proxy = {'https': 'socks5://138.36.21.75:9913'}
+
 
 global catdict
 catdict={}
@@ -59,6 +48,7 @@ def get_catdict():
     else:
         return('Ошибка получения категорий')
 
+
 def get_anek(url1):
     website = requests.get(url1)
     website.encoding = 'cp1251'
@@ -76,7 +66,7 @@ def get_anek(url1):
 
 
 def db_insert_temp(TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d')):
-    with closing(connec) as conn:
+    with closing(get_connec()) as conn:
         with conn.cursor() as cursor:
             sql=f'''INSERT INTO "TBTEMPERATURE" ("DATA", "MUSER_ID", "TEMP") VALUEs ('{DATA}', {MUSER_ID}, {TEMP}) ON CONFLICT ("DATA", "MUSER_ID") DO UPDATE SET "TEMP"={TEMP} '''
             print(sql)
@@ -102,10 +92,12 @@ def hello(message):
                                        "Я могу поразвлекать вас анекдотами с anekdotov.net, \n"
                                        "Выберите вопрос", reply_markup=inline_kb1)
 
+
 @bot.callback_query_handler(func=lambda c: c.data == 'button1')
 def process_callback_button1(callback_query: types.CallbackQuery):
     bot.answer_callback_query(callback_query.id)
     bot.send_message(callback_query.from_user.id, f'На свете всех милее и румяней и белее - {str(callback_query.from_user.first_name)}')
+
 
 @bot.callback_query_handler(func=lambda c: c.data == 'button2')
 def process_callback_button2(callback_query: types.CallbackQuery):
@@ -121,6 +113,7 @@ def process_callback_button2(callback_query: types.CallbackQuery):
         bot.send_message(callback_query.from_user.id, 'Ошибка'+str(catdict))
     # bot.send_message(callback_query.from_user.id, 'Нажата вторая кнопка!')
 
+
 @bot.callback_query_handler(func=lambda c: c.data in [i for i in catdict])
 # def anek(message):
 def process_callback_button3(callback_query: types.CallbackQuery):
@@ -130,9 +123,40 @@ def process_callback_button3(callback_query: types.CallbackQuery):
                                         '\n еще один, или вернуться в начало /start')
 
 
+inline_temp1 = types.InlineKeyboardMarkup()
+inline_temp_today = types.InlineKeyboardButton('Записать на сегодня', callback_data='btn_temp_today')
+inline_temp_select_day = types.InlineKeyboardButton('Выбрать другой день', callback_data='btn_temp_select_day')
+inline_temp1.add(inline_temp_today)
+inline_temp1.add(inline_temp_select_day)
+
+
+#нажали первую нопку ввода температуры
+@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
+def process_callback_btn_temp(callback_query: types.CallbackQuery):
+    bot.answer_callback_query(callback_query.id)
+    bot.send_message(callback_query.from_user.id, 'Введите температуру...', reply_markup=inline_temp1)
+
+
 @bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
 def process_callback_button2(callback_query: types.CallbackQuery):
     bot.answer_callback_query(callback_query.id)
+
+
+#просто написали сообщение
+@bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
+def echo(message):
+    global muser_temp
+    muser_temp =dict()
+    muser_temp[message.chat.id]=float(message.text.replace(',','.'))
+    bot.send_message(message.chat.id, 'Это сегодняшняя температура?', reply_markup=inline_temp1)
+
+
+#нажали Записать на сегодня
+@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp_today')
+def process_callback_btn_temp(callback_query: types.CallbackQuery):
+    bot.answer_callback_query(callback_query.id)
+    db_insert_temp(muser_temp[callback_query.from_user.id], callback_query.from_user.id)
+    bot.send_message(callback_query.from_user.id, f'{muser_temp[callback_query.from_user.id]} записана на сегодня для пользователя {callback_query.from_user.id}')
 
 
 
