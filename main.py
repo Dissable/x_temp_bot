@@ -139,23 +139,7 @@ def process_callback_btn_temp(callback_query: types.CallbackQuery):
 
 @bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
 def process_callback_button2(callback_query: types.CallbackQuery):
-    bot.answer_callback_query(callback_query.id)
-
-
-#просто написали сообщение
-@bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
-def echo(message):
-    global muser_temp
-    muser_temp =dict()
-    muser_temp[message.chat.id]=float(message.text.replace(',','.'))
-    bot.send_message(message.chat.id, 'Это сегодняшняя температура?', reply_markup=inline_temp1)
-
-
-#нажали Записать на сегодня
-@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp_today')
-def process_callback_btn_temp(callback_query: types.CallbackQuery):
-    bot.answer_callback_query(callback_query.id)
-    db_insert_temp(muser_temp[callback_query.from_user.id], callback_query.from_user.id)
+    bot.answer_callback_query(callback_query, callback_query.from_user.id)
     bot.send_message(callback_query.from_user.id, f'{muser_temp[callback_query.from_user.id]} записана на сегодня для пользователя {callback_query.from_user.id}')
 
 
