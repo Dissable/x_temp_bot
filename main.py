@@ -131,49 +131,57 @@ inline_temp1.add(inline_temp_select_day)
 
 
 #нажали первую нопку ввода температуры
-@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
-def process_callback_btn_temp(callback_query: types.CallbackQuery):
-    bot.answer_callback_query(callback_query.id)
-    bot.send_message(callback_query.from_user.id, 'Введите температуру...', reply_markup=inline_temp1)
+#@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
+#def process_callback_btn_temp(callback_query: types.CallbackQuery):
+#    bot.answer_callback_query(callback_query.id)
+#    bot.send_message(callback_query.from_user.id, 'Введите температуру...', reply_markup=inline_temp1)
 
 
-@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
-def process_callback_button2(callback_query: types.CallbackQuery):
-    bot.answer_callback_query(callback_query, callback_query.from_user.id)
-    bot.send_message(callback_query.from_user.id, f'{muser_temp[callback_query.from_user.id]} записана на сегодня для пользователя {callback_query.from_user.id}')
+@bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
+def temp(message):
+    #pgb=Postgres
+    #pgb.insertt (TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d'))
+    #pgb.insertt (message.text, message.chat.id)
+    bot.send_message(message.chat.id, message.text)
+
+
+#@bot.callback_query_handler(func=lambda c: c.data == 'btn_temp')
+#def process_callback_button2(callback_query: types.CallbackQuery):
+#    bot.answer_callback_query(callback_query, callback_query.from_user.id)
+#    bot.send_message(callback_query.from_user.id, f'{muser_temp[callback_query.from_user.id]} записана на сегодня для пользователя {callback_query.from_user.id}')
 
 
 
 
 ###############      ниже оставили кусочек старого кода, оттуда копируем то, что нам надо      ##############
-@bot.message_handler(func=lambda message: message.text=='Кто на свете всех милее, всех румяней и белее?')
-def Xen(message):
-    bot.send_message(message.chat.id, f'На свете всех милее и румяней и белее - {str(message.from_user.first_name)}')
+#@bot.message_handler(func=lambda message: message.text=='Кто на свете всех милее, всех румяней и белее?')
+#def Xen(message):
+#    bot.send_message(message.chat.id, f'На свете всех милее и румяней и белее - {str(message.from_user.first_name)}')
 
 
-@bot.message_handler(func=lambda message: message.text=='Расскажи анекдот')
-def getcats(message):
-    markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    global catdict
-    catdict = get_catdict()
-    if type(catdict)==dict:
-        for i in list(get_catdict())[:-2]:
-            markup1.row('/'+i)
-        bot.send_message(message.chat.id, "Выберите категорию, или можно вернуться в начало "+'/start', reply_markup=markup1)
-    else:
-        bot.send_message(message.chat.id, 'Ошибка'+str(catdict))
+#@bot.message_handler(func=lambda message: message.text=='Расскажи анекдот')
+#def getcats(message):
+#    markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+#    global catdict
+#    catdict = get_catdict()
+#    if type(catdict)==dict:
+#        for i in list(get_catdict())[:-2]:
+#            markup1.row('/'+i)
+#        bot.send_message(message.chat.id, "Выберите категорию, или можно вернуться в начало "+'/start', reply_markup=markup1)
+#    else:
+#        bot.send_message(message.chat.id, 'Ошибка'+str(catdict))
 
 
-@bot.message_handler(func=lambda message: message.text in ['/'+i for i in catdict])
-def anek(message):
-    bot.send_message(message.chat.id, get_anek(catdict[message.text[1:]]) +
-                                        '\n-------------------------------------------------'+
-                                        '\n еще один, или вернуться в начало /start')
+#@bot.message_handler(func=lambda message: message.text in ['/'+i for i in catdict])
+#def anek(message):
+#    bot.send_message(message.chat.id, get_anek(catdict[message.text[1:]]) +
+#                                        '\n-------------------------------------------------'+
+#                                        '\n еще один, или вернуться в начало /start')
 
 
-@bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
-def echo(message):
-    bot.send_message(message.chat.id, message.text)
+#@bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
+#def echo(message):
+#    bot.send_message(message.chat.id, message.text)
 ##################         код выше будет заменен        #####################
 
 
