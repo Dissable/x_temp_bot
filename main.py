@@ -11,6 +11,7 @@ import psycopg2
 from contextlib import closing
 from telebot import apihelper
 import dbworker
+from dbworker import Postgres
 
 
 try:
