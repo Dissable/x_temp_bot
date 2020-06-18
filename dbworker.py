@@ -1,4 +1,7 @@
 #для работы с базой данных
+import datetime
+import psycopg2
+
 class Postgres(object):
     _instance = None
 
