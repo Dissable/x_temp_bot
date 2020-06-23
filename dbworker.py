@@ -29,7 +29,7 @@ class Postgres(object):
                 print('connecting to PostgreSQL database...')
                 #connection = Postgres._instance.connection = psycopg2.connect(os.environ['DATABASE_URL'],
                 #                                                              sslmode='require')
-                cls._instance.connection = get_connec()
+                cls._instance.connection = cls.get_connec()
                 cls._instance.cursor = cls._instance.connection.cursor()
                 cls._instance.cursor.execute('SELECT VERSION()')
                 db_version = cls._instance.cursor.fetchone()
