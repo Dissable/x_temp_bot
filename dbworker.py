@@ -29,14 +29,14 @@ class Postgres(object):
                 print('connecting to PostgreSQL database...')
                 #connection = Postgres._instance.connection = psycopg2.connect(os.environ['DATABASE_URL'],
                 #                                                              sslmode='require')
-                connection = get_connec()
-                cursor = Postgres._instance.cursor = connection.cursor()
-                cursor.execute('SELECT VERSION()')
-                db_version = cursor.fetchone()
+                cls._instance.connection = get_connec()
+                cls._instance.cursor = cls._instance.connection.cursor()
+                cls._instance.cursor.execute('SELECT VERSION()')
+                db_version = cls._instance.cursor.fetchone()
 
             except Exception as error:
                 print('Error: connection not established {}'.format(error))
-                Postgres._instance = None
+                cls._instance = None
 
             else:
                 print('connection established\n{}'.format(db_version[0]))
@@ -49,13 +49,14 @@ class Postgres(object):
         self.cursor = self._instance.cursor
 
 
-    def insertt (TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d')):
+    def insertt (self, TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d')):
         sql = f'''INSERT INTO "TBTEMPERATURE" ("DATA", "MUSER_ID", "TEMP") VALUEs ('{DATA}', {MUSER_ID}, {TEMP}) ON CONFLICT ("DATA", "MUSER_ID") DO UPDATE SET "TEMP"={TEMP} '''
         print(sql)
-        cursor.execute(sql)
-        connection.commit()
+        self.cursor.execute(sql)
+        self.connection.commit()
         print('temp insert commit')
 
+    #это старая функция - в неё подглядываем и пишем функцию выше    
     def db_insert_temp(TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d')):
         with closing(connec) as conn:
             with conn.cursor() as cursor:
