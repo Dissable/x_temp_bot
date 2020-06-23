@@ -141,7 +141,7 @@ inline_temp1.add(inline_temp_select_day)
 
 @bot.message_handler(func=lambda message: message.text.lower().strip()!='start')
 def temp(message):
-    pgb=Postgres
+    pgb=Postgres()
     #pgb.insertt (TEMP, MUSER_ID: int, DATA=datetime.datetime.today().strftime('%Y-%m-%d'))
     pgb.insertt (message.text, message.chat.id)
     bot.send_message(message.chat.id, 'Внесена температура на ' + datetime.datetime.today().strftime('%Y-%m-%d') + message.text)
